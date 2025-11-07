@@ -1,5 +1,9 @@
 FROM mongo:3.4
-COPY drop/* usr/local/data/db/
-#es como Entrypoint, pero CMD se puede sobreescribir con otro comando al
-#ejecutar el contenedor
-CMD ["mongod", "--smallfiles", "--rest"]
+
+# Copia los scripts/archivos de inicialización a la ruta que la imagen oficial
+# de MongoDB ejecuta automáticamente al iniciar cuando la base está vacía.
+# Esto evita sobrescribir el ENTRYPOINT/CMD y evita pasar opciones obsoletas
+# como --smallfiles o --rest.
+COPY drop/* /docker-entrypoint-initdb.d/
+
+# No sobreescribimos el ENTRYPOINT ni el CMD de la imagen oficial.
